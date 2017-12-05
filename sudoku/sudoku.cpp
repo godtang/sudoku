@@ -7,16 +7,16 @@
 void exclusions(int iCol, int iRow);
 bool checkUnknown();
 
-char sodukuInit[9][9] = { 
-	{ 0, 6, 1, 0, 3, 0, 0, 2, 0 },
-	{ 0, 5, 0, 0, 0, 8, 1, 0, 7 },
-	{ 0, 0, 0, 0, 0, 7, 0, 3, 4 },
-	{ 0, 0, 9, 0, 0, 6, 0, 7, 8 },
-	{ 0, 0, 3, 2, 7, 9, 5, 0, 0 },
-	{ 5, 7, 0, 3, 0, 0, 9, 0, 2 },
-	{ 1, 9, 0, 7, 6, 0, 0, 0, 0 },
-	{ 8, 0, 2, 4, 0, 0, 0, 6, 0 },
-	{ 6, 4, 0, 0, 1, 0, 2, 5, 0 }
+char sodukuInit[9][9] = {
+	{ 0, 0, 7, 0, 0, 0, 9, 0, 0 },
+	{ 2, 0, 0, 5, 0, 7, 0, 0, 6 },
+	{ 0, 8, 0, 1, 0, 4, 0, 7, 0 },
+	{ 0, 4, 0, 0, 1, 0, 0, 3, 0 },
+	{ 6, 0, 1, 0, 0, 0, 8, 0, 9 },
+	{ 0, 9, 0, 0, 8, 0, 0, 6, 0 },
+	{ 0, 5, 0, 8, 0, 9, 0, 1, 0 },
+	{ 0, 1, 0, 6, 0, 3, 0, 0, 2 },
+	{ 0, 0, 6, 0, 0, 0, 3, 0, 0 }
 };
 
 
@@ -92,6 +92,20 @@ void exclusions(int iCol, int iRow)
 	}
 	//printf("\n");
 
+	int iStartCol = iCol / 3;
+	int iStartRow = iRow / 3;
+	for (size_t i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+	{
+		for (size_t j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+		{
+			//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
+			if (0 != sodukuInit[j][iRow])
+			{
+				iExclusions[sodukuInit[j][iRow] - 1] = 0;
+			}
+		}
+	}
+	//printf("************************\n");
 	int iRemain;
 	int iUniqCount = 0;
 	for (size_t k = 0; k < 9; k++)
