@@ -8,6 +8,12 @@ void UniqueMethod(int iCol, int iRow);
 bool checkUnknown();
 void exclusions();
 bool ConfirmNumber(int iCol, int iRow, int iNumber);
+void possibility();
+
+
+
+
+
 
 char sodukuInit[9][9] = {
 	{ 0, 0, 7, 0, 0, 0, 9, 0, 0 },
@@ -33,6 +39,18 @@ char sodukuInit2[9][9] = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 1 }
 };
 
+
+char sodukuInit3[9][9] = {
+	{ 0, 6, 1, 0, 3, 0, 0, 2, 0 },
+	{ 0, 5, 0, 0, 0, 8, 1, 0, 7 },
+	{ 0, 0, 0, 0, 0, 7, 0, 3, 4 },
+	{ 0, 0, 9, 0, 0, 6, 0, 7, 8 },
+	{ 0, 0, 3, 2, 7, 9, 5, 0, 0 },
+	{ 5, 7, 0, 3, 0, 0, 9, 0, 2 },
+	{ 1, 9, 0, 7, 6, 0, 0, 0, 0 },
+	{ 8, 0, 2, 4, 0, 0, 0, 6, 0 },
+	{ 6, 4, 0, 0, 1, 0, 2, 5, 0 }
+};
 
 void showSoduku()
 {
@@ -71,6 +89,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	showSoduku();
 	for (size_t i = 1; i < 1000; i++)
 	{
+		possibility();
 		algorithm();
 		exclusions();
 		if (checkUnknown())
@@ -284,3 +303,7 @@ bool  ConfirmNumber(int iCol, int iRow, int iNumber)
 }
 
 
+void possibility()
+{
+	char 
+}
