@@ -8,7 +8,9 @@ void UniqueMethod(int iCol, int iRow);
 bool checkUnknown();
 void exclusions();
 bool ConfirmNumber(int iCol, int iRow, int iNumber);
-void possibility();
+void possibility(char* pSrc[9][9]);
+void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9]);
+void ConfirmPossibility(char* pSrc[9][9]);
 
 
 
@@ -86,12 +88,41 @@ void algorithm()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	char* sodukuMaybe[9][9];
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			char* p = new char[9];
+			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
+			{
+				p[iMayValue] = iMayValue + 1;
+			}
+			sodukuMaybe[iCol][iRow] = p;
+		}
+	}
+	char* sodukuCannotbe[9][9];
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			char* p = new char[9];
+			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
+			{
+				p[iMayValue] = iMayValue + 1;
+			}
+			sodukuCannotbe[iCol][iRow] = p;
+		}
+	}
+	showSoduku();
+	ShowPossibility(sodukuMaybe, sodukuCannotbe);
 	showSoduku();
 	for (size_t i = 1; i < 1000; i++)
 	{
-		possibility();
-		algorithm();
-		exclusions();
+		possibility(sodukuMaybe);
+		ShowPossibility(sodukuMaybe, sodukuCannotbe);
+		//algorithm();
+		//exclusions();
 		if (checkUnknown())
 		{
 			printf("%d times over\n", i);
@@ -303,7 +334,221 @@ bool  ConfirmNumber(int iCol, int iRow, int iNumber)
 }
 
 
-void possibility()
+void possibility(char* pSrc[9][9])
 {
-	char 
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			char* pTemp = pSrc[iCol][iRow];
+			if (0 == sodukuInit[iCol][iRow])
+			{
+				for (size_t i = 0; i < 9; i++)
+				{
+					if (0 != sodukuInit[iCol][i])
+					{
+						pTemp[sodukuInit[iCol][i] - 1] = 0;
+					}
+					//printf("%d ", pSoduku[iCol * 9 + i]);
+				}
+				//printf("\n");
+
+
+				for (size_t j = 0; j < 9; j++)
+				{
+					if (0 != sodukuInit[j][iRow])
+					{
+						pTemp[sodukuInit[j][iRow] - 1] = 0;
+					}
+					//printf("%d ", pSoduku[j * 9 + iRow]);
+				}
+				//printf("\n");
+
+				int iStartCol = iCol / 3;
+				int iStartRow = iRow / 3;
+				for (int i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+				{
+					for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+					{
+						//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
+						if (0 != sodukuInit[j][iRow])
+						{
+							pTemp[sodukuInit[j][iRow] - 1] = 0;
+						}
+					}
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < 9; i++)
+				{
+					pTemp[i] = 0;
+				}
+			}
+		}
+	}
 }
+
+void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
+{
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			printf("%d,%d ", iCol, iRow);
+			if (0 != sodukuInit[iCol][iRow])
+			{
+				printf("must be %d", sodukuInit[iCol][iRow]);
+			}
+			else
+			{
+				char iExclusions[9] = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+				for (size_t i = 0; i < 9; i++)
+				{
+					if (0 != sodukuInit[iCol][i])
+					{
+						iExclusions[sodukuInit[iCol][i] - 1] = 0;
+					}
+					//printf("%d ", pSoduku[iCol * 9 + i]);
+				}
+				//printf("\n");
+
+
+				for (size_t j = 0; j < 9; j++)
+				{
+					if (0 != sodukuInit[j][iRow])
+					{
+						iExclusions[sodukuInit[j][iRow] - 1] = 0;
+					}
+					//printf("%d ", pSoduku[j * 9 + iRow]);
+				}
+				//printf("\n");
+
+				int iStartCol = iCol / 3;
+				int iStartRow = iRow / 3;
+				for (int i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+				{
+					for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+					{
+						//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
+						if (0 != sodukuInit[j][iRow])
+						{
+							iExclusions[sodukuInit[j][iRow] - 1] = 0;
+						}
+					}
+				}
+				//printf("************************\n");
+				int iRemain;
+				int iUniqCount = 0;
+				for (size_t k = 0; k < 9; k++)
+				{
+					if (0 != (int)iExclusions[k])
+					{
+						iRemain = (int)iExclusions[k];
+						iUniqCount++;
+					}
+				}
+				if (1 == iUniqCount)
+				{
+					printf("must be %d", sodukuInit[iCol][iRow]);;
+				}
+				else
+				{
+					//printf("may be ");
+					for (size_t i = 0; i < 9; i++)
+					{
+						if (0 != (int)iExclusions[i])
+						{
+
+							//printf("%d,", iExclusions[i]);
+							iUniqCount++;
+							char* pTempMaybe = pMaybe[iCol][iRow];
+							pTempMaybe[i] = 0;
+							char* pTempCannotbe = pCannotbe[iCol][iRow];
+							pTempCannotbe[i] = iExclusions[i];
+						}
+						else
+						{
+							char* pTempMaybe = pMaybe[iCol][iRow];
+							pTempMaybe[i] = iExclusions[i];
+							char* pTempCannotbe = pCannotbe[iCol][iRow];
+							pTempCannotbe[i] = 0;
+						}
+					}
+					char* pTempMaybe = pMaybe[iCol][iRow];
+					char* pTempCannotbe = pCannotbe[iCol][iRow];
+					int jjjjjjjj = 0;
+				}
+			}
+			printf("\n");
+		}
+	}
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			if (0 != sodukuInit[iCol][iRow])
+			{
+				printf("%d,%d ", iCol, iRow);
+				printf("may be ");
+				char* pTempMaybe = pMaybe[iCol][iRow];
+				for (size_t i = 0; i < 9; i++)
+				{
+					if (0 != pTempMaybe[i])
+					{
+						printf("%d,", pTempMaybe[i]);
+					}
+				}
+				char* pTempCannotbe = pCannotbe[iCol][iRow];
+				printf("; can not be ");
+				for (size_t i = 0; i < 9; i++)
+				{
+					if (0 != pTempCannotbe[i])
+					{
+						printf("%d,", pTempCannotbe[i]);
+					}
+				}
+				printf("\n");
+			}			
+		}
+	}
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			char* pTemp = pMaybe[iCol][iRow];
+			printf("%d,%d ", iCol, iRow);
+			if (0 != sodukuInit[iCol][iRow])
+			{
+				printf("must be %d", sodukuInit[iCol][iRow]);
+			}
+			else
+			{
+				printf("maybe ", iCol, iRow);
+				for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
+				{
+					if (0 != pTemp[iMayValue])
+					{
+						printf("%d,", pTemp[iMayValue]);
+					}
+				}
+			}
+			printf("\n");
+		}
+	}    
+}
+
+
+void ConfirmPossibility(char* pSrc[9][9])
+{
+
+}
+
+
+
+
+
+
+
+
+
