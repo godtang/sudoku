@@ -2,18 +2,13 @@
 //
 
 #include "stdafx.h"
-#include <windows.h>
 
-void UniqueMethod(int iCol, int iRow);
-bool checkUnknown();
-void exclusions();
-bool ConfirmNumber(int iCol, int iRow, int iNumber);
-void possibility(char* pSrc[9][9]);
-void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9]);
-void ConfirmPossibility(char* pSrc[9][9]);
+#include "sudoku.h"
 
 
-
+char* sodukuMaybe[9][9];
+char* sodukuCannotbe[9][9];
+int iCheck = 0;
 
 
 
@@ -88,7 +83,6 @@ void algorithm()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	char* sodukuMaybe[9][9];
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
@@ -101,7 +95,6 @@ int _tmain(int argc, _TCHAR* argv[])
 			sodukuMaybe[iCol][iRow] = p;
 		}
 	}
-	char* sodukuCannotbe[9][9];
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
@@ -109,25 +102,36 @@ int _tmain(int argc, _TCHAR* argv[])
 			char* p = new char[9];
 			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
 			{
-				p[iMayValue] = iMayValue + 1;
+				p[iMayValue] = 0;
 			}
 			sodukuCannotbe[iCol][iRow] = p;
 		}
 	}
-	showSoduku();
-	ShowPossibility(sodukuMaybe, sodukuCannotbe);
-	showSoduku();
-	for (size_t i = 1; i < 1000; i++)
+	ShowCannotbe();
+ 	showSoduku();
+// 	ShowPossibility();
+// 	ShowPossibility(sodukuMaybe, sodukuCannotbe);
+// 	showSoduku();
+//	ShowCannotbe();
+	for (size_t i = 0; i < 1000; i++)
 	{
-		possibility(sodukuMaybe);
-		ShowPossibility(sodukuMaybe, sodukuCannotbe);
-		//algorithm();
-		//exclusions();
 		if (checkUnknown())
 		{
 			printf("%d times over\n", i);
 			break;
 		}
+		//ShowPossibility();
+		//possibility(sodukuMaybe);
+		//ShowPossibility(sodukuMaybe, sodukuCannotbe);
+		algorithm();
+		ResetCannotbe();
+		ShowPossibility();
+		showSoduku();
+		ShowCannotbe();
+		ConfirmByCannotbe();
+		//ShowCannotbe();
+		//ShowCannotbe();
+		//exclusions();
 	}
 	showSoduku();
 	return 0;
@@ -165,9 +169,9 @@ void UniqueMethod(int iCol, int iRow)
 		for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
 		{
 			//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
-			if (0 != sodukuInit[j][iRow])
+			if (0 != sodukuInit[i][j])
 			{
-				iExclusions[sodukuInit[j][iRow] - 1] = 0;
+				iExclusions[sodukuInit[i][j] - 1] = 0;
 			}
 		}
 	}
@@ -227,7 +231,6 @@ void exclusions()
 	return;
 }
 
-int iCheck = 0;
 bool checkUnknown()
 {
 	int iUnknown = 0;
@@ -261,7 +264,7 @@ bool checkUnknown()
 	}
 }
 
-bool  ConfirmNumber(int iCol, int iRow, int iNumber)
+bool ConfirmNumber(int iCol, int iRow, int iNumber)
 {
 	char szCanExcludeInnerHorizontal[9] = { 0 };
 	printf("ready confirm %d,%d = %d\n", iCol, iRow, iNumber);
@@ -544,11 +547,272 @@ void ConfirmPossibility(char* pSrc[9][9])
 
 }
 
+void ShowPossibility()
+{
+	for (size_t iCol = 0; iCol < 9; iCol++)
+	{
+		for (size_t iRow = 0; iRow < 9; iRow++)
+		{
+			printf("%d,%d ", iCol, iRow);
+			if (0 != sodukuInit[iCol][iRow])
+			{
+				printf("must be %d", sodukuInit[iCol][iRow]);
+			}
+			else
+			{
+				printf("maybe ");
+				for (size_t iTemp = 1; iTemp <= 9; iTemp++)
+				{
+					if (MaybeNumber(iCol,iRow,iTemp))
+					{
+						printf("%d,", iTemp);
+					}
+				}
+				printf("; can not be ");
+				for (size_t iTemp = 1; iTemp <= 9; iTemp++)
+				{
+					if (CannotbeNumber(iCol, iRow, iTemp))
+					{
+						printf("%d,", iTemp);
+					}
+				}
+			}
+			printf("\n");
+		}
+	}
+	return;
+}
 
+bool MaybeNumber(int iCol, int iRow, int iNumber)
+{
+	//Horizontal
+	for (int iHorizontal = 0; iHorizontal < 9; iHorizontal++)
+	{
+		if (iNumber == sodukuInit[iHorizontal][iRow])
+		{
+			return false;
+		}
+	}
 
+	//Vertical
+	for (int iVertical = 0; iVertical < 9; iVertical++)
+	{
+		if (iNumber == sodukuInit[iCol][iVertical])
+		{
+			return false;
+		}
+	}
 
+	//Box
+	int iStartCol = iCol / 3;
+	int iStartRow = iRow / 3;
+	for (int i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+	{
+		for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+		{
+			//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
+			if (iNumber == sodukuInit[i][j])
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
 
+bool CannotbeNumber(int iCol, int iRow, int iNumber)
+{
+	//Horizontal
+	for (int iHorizontal = 0; iHorizontal < 9; iHorizontal++)
+	{
+		if (iNumber == sodukuInit[iCol][iHorizontal])
+		{
+			sodukuCannotbe[iCol][iRow][iNumber-1] = 1;
+			return true;
+		}
+	}
 
+	//Vertical
+	for (int iVertical = 0; iVertical < 9; iVertical++)
+	{
+		if (iNumber == sodukuInit[iVertical][iRow])
+		{
+			sodukuCannotbe[iCol][iRow][iNumber-1] = 1;
+			return true;
+		}
+	}
 
+	//Box
+	int iStartCol = iCol / 3;
+	int iStartRow = iRow / 3;
+	for (int i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+	{
+		for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+		{
+			//printf("iCol = %d, iRow = %d checked iStartCol = %d, iStartRow = %d\n", iCol, iRow, i, j);
+			if (iNumber == sodukuInit[i][j])
+			{
+				sodukuCannotbe[iCol][iRow][iNumber-1] = 1;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void ShowCannotbe()
+{
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			printf("%d,%d can not be ", iCol, iRow);
+			char* pTemp = sodukuCannotbe[iCol][iRow];
+			for (size_t i = 0; i < 9; i++)
+			{
+				if (0 != pTemp[i])
+				{
+					printf("%d,", i+1);
+				}
+			}
+			printf("\n");
+		}
+	}
+}
+
+void ResetCannotbe()
+{
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
+			{
+				sodukuCannotbe[iCol][iRow][iMayValue] = 0;
+			}
+		}
+	}
+}
+
+void ConfirmByCannotbe()
+{
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			if (0 == sodukuInit[iCol][iRow])
+			{
+				for (int iNumber = 1; iNumber <= 9; iNumber++)
+				{
+					if (ConfirmByCannotbe(iCol, iRow, iNumber))
+					{
+						showSoduku();
+						printf("%d,%d = %d\n", iCol, iRow, iNumber);
+						sodukuInit[iCol][iRow] = iNumber;
+						showSoduku();
+						return;
+					}
+				}
+			}
+		}
+	}
+}
+
+bool ConfirmByCannotbe(int iCol, int iRow, int iNumber)
+{
+	bool bResult = true;
+	bool bContinue = true;
+	//Horizontal
+	for (int iHorizontal = 0; iHorizontal < 9; iHorizontal++)
+	{
+		if (iHorizontal != iCol)
+		{
+			if (0!=sodukuInit[iCol][iHorizontal])
+			{
+				continue;
+			}
+			else
+			{
+				char* pTemp = sodukuCannotbe[iCol][iHorizontal];
+				if (1 == pTemp[iNumber-1])
+				{
+					continue;
+				}
+				else
+				{
+					bResult = false;
+					break;
+				}
+			}
+		}
+		
+	}
+	if (bResult)
+	{
+		return true;
+	}
+
+	//Vertical
+	bResult = true;
+	for (int iVertical = 0; iVertical < 9; iVertical++)
+	{
+		if (iVertical != iRow)
+		{
+			if (0 != sodukuInit[iVertical][iRow])
+			{
+				continue;
+			}
+			else
+			{
+				char* pTemp = sodukuCannotbe[iVertical][iRow];
+				if (1 == pTemp[iNumber-1])
+				{
+					continue;
+				}
+				else
+				{
+					bResult = false;
+					break;
+				}
+			}
+		}
+	}
+	if (bResult)
+	{
+		return true;
+	}
+
+	//Box
+	bResult = true;
+	int iStartCol = iCol / 3;
+	int iStartRow = iRow / 3;
+	for (int iHorizontal = 3 * iStartCol; iHorizontal < 3 * iStartCol + 3; iHorizontal++)
+	{
+		for (int iVertical = 3 * iStartRow; iVertical < 3 * iStartRow + 3; iVertical++)
+		{
+			if (iHorizontal != iCol&&iVertical != iRow)
+			{
+				if (0 != sodukuInit[iHorizontal][iVertical])
+				{
+					continue;
+				}
+				else
+				{
+					char* pTemp = sodukuCannotbe[iHorizontal][iVertical];
+					if (1 == pTemp[iNumber-1])
+					{
+						continue;
+					}
+					else
+					{
+						bResult = false;
+						break;
+					}
+				}
+			}
+		}
+	}
+	return bResult;
+}
 
 
