@@ -12,7 +12,8 @@ int iCheck = 0;
 
 
 
-char sodukuInit[9][9] = {
+//probation1
+char sodukuInit11[9][9] = {
 	{ 0, 0, 7, 0, 0, 0, 9, 0, 0 },
 	{ 2, 0, 0, 5, 0, 7, 0, 0, 6 },
 	{ 0, 8, 0, 1, 0, 4, 0, 7, 0 },
@@ -36,8 +37,8 @@ char sodukuInit2[9][9] = {
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 1 }
 };
 
-
-char sodukuInit3[9][9] = {
+//fresh1
+char sodukuInit1[9][9] = {
 	{ 0, 6, 1, 0, 3, 0, 0, 2, 0 },
 	{ 0, 5, 0, 0, 0, 8, 1, 0, 7 },
 	{ 0, 0, 0, 0, 0, 7, 0, 3, 4 },
@@ -47,6 +48,19 @@ char sodukuInit3[9][9] = {
 	{ 1, 9, 0, 7, 6, 0, 0, 0, 0 },
 	{ 8, 0, 2, 4, 0, 0, 0, 6, 0 },
 	{ 6, 4, 0, 0, 1, 0, 2, 5, 0 }
+};
+
+//normal1
+char sodukuInit[9][9] = {
+	{ 0,0,8,0,9,0,0,0,0 },
+	{ 0, 7, 0, 0, 0, 0, 2, 8, 0 },
+	{ 0,6,4,1,0,0,3,0,9 },
+	{ 0,0,0,8,0,5,9,0,0 },
+	{ 5,0,0,0,0,0,0,0,1 },
+	{ 0,0,9,3,0,4,0,0,0 },
+	{ 8,0,2,0,0,7,5,6,0 },
+	{ 0,9,7,0,0,0,0,1,0 },
+	{ 0,0,0,0,6,0,7,0,0 }
 };
 
 void showSoduku()
@@ -725,10 +739,14 @@ bool ConfirmByCannotbe(int iCol, int iRow, int iNumber)
 	//Horizontal
 	for (int iHorizontal = 0; iHorizontal < 9; iHorizontal++)
 	{
-		if (iHorizontal != iCol)
+		if (iHorizontal != iRow)
 		{
 			if (0!=sodukuInit[iCol][iHorizontal])
 			{
+				if (iNumber == sodukuInit[iCol][iHorizontal])
+				{
+					return false;
+				}
 				continue;
 			}
 			else
@@ -756,10 +774,14 @@ bool ConfirmByCannotbe(int iCol, int iRow, int iNumber)
 	bResult = true;
 	for (int iVertical = 0; iVertical < 9; iVertical++)
 	{
-		if (iVertical != iRow)
+		if (iVertical != iCol)
 		{
 			if (0 != sodukuInit[iVertical][iRow])
 			{
+				if (iNumber == sodukuInit[iVertical][iRow])
+				{
+					return false;
+				}
 				continue;
 			}
 			else
@@ -790,10 +812,17 @@ bool ConfirmByCannotbe(int iCol, int iRow, int iNumber)
 	{
 		for (int iVertical = 3 * iStartRow; iVertical < 3 * iStartRow + 3; iVertical++)
 		{
-			if (iHorizontal != iCol&&iVertical != iRow)
+			if (iHorizontal == iCol&&iVertical == iRow)
+			{
+			}
+			else
 			{
 				if (0 != sodukuInit[iHorizontal][iVertical])
 				{
+					if (iNumber == sodukuInit[iHorizontal][iVertical])
+					{
+						return false;
+					}
 					continue;
 				}
 				else
