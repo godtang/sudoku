@@ -12,8 +12,8 @@ int iCheck = 0;
 
 
 
-//probation1
-char sodukuInit11[9][9] = {
+//sodukuInit_probation_1
+char sodukuInit[9][9] = {
 	{ 0, 0, 7, 0, 0, 0, 9, 0, 0 },
 	{ 2, 0, 0, 5, 0, 7, 0, 0, 6 },
 	{ 0, 8, 0, 1, 0, 4, 0, 7, 0 },
@@ -50,8 +50,8 @@ char sodukuInit1[9][9] = {
 	{ 6, 4, 0, 0, 1, 0, 2, 5, 0 }
 };
 
-//normal1
-char sodukuInit[9][9] = {
+//sodukuInit_normal_1
+char sodukuInit_normal_1[9][9] = {
 	{ 0,0,8,0,9,0,0,0,0 },
 	{ 0, 7, 0, 0, 0, 0, 2, 8, 0 },
 	{ 0,6,4,1,0,0,3,0,9 },
@@ -61,6 +61,19 @@ char sodukuInit[9][9] = {
 	{ 8,0,2,0,0,7,5,6,0 },
 	{ 0,9,7,0,0,0,0,1,0 },
 	{ 0,0,0,0,6,0,7,0,0 }
+};
+
+//sodukuInit_normal_60
+char sodukuInit_normal_60[9][9] = {
+	{ 0, 0, 0, 0, 1, 0, 0, 0, 0 },
+	{ 7, 6, 0, 0, 0, 0, 5, 9, 0 },
+	{ 1, 0, 5, 0, 0, 0, 8, 0, 0 },
+	{ 0, 0, 0, 7, 9, 0, 0, 1, 0 },
+	{ 0, 0, 3, 0, 0, 0, 2, 0, 0 },
+	{ 0, 8, 0, 0, 6, 1, 0, 0, 0 },
+	{ 0, 0, 8, 0, 0, 0, 7, 0, 3 },
+	{ 0, 7, 4, 0, 0, 0, 0, 8, 6 },
+	{ 0, 0, 0, 0, 3, 0, 0, 0, 0 }
 };
 
 void showSoduku()
@@ -129,6 +142,11 @@ int _tmain(int argc, _TCHAR* argv[])
 //	ShowCannotbe();
 	for (size_t i = 0; i < 1000; i++)
 	{
+		if (!CheckSudodu())
+		{
+			printf("some error happened !\n");
+			return -1;
+		}
 		if (checkUnknown())
 		{
 			printf("%d times over\n", i);
@@ -146,6 +164,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		//ShowCannotbe();
 		//ShowCannotbe();
 		//exclusions();
+
 	}
 	showSoduku();
 	return 0;
@@ -412,10 +431,10 @@ void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
-			printf("%d,%d ", iCol, iRow);
+			//printf("%d,%d ", iCol, iRow);
 			if (0 != sodukuInit[iCol][iRow])
 			{
-				printf("must be %d", sodukuInit[iCol][iRow]);
+				//printf("must be %d", sodukuInit[iCol][iRow]);
 			}
 			else
 			{
@@ -497,7 +516,7 @@ void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
 					int jjjjjjjj = 0;
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 	}
 	for (int iCol = 0; iCol < 9; iCol++)
@@ -506,26 +525,26 @@ void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
 		{
 			if (0 != sodukuInit[iCol][iRow])
 			{
-				printf("%d,%d ", iCol, iRow);
-				printf("may be ");
+				//printf("%d,%d ", iCol, iRow);
+				//printf("may be ");
 				char* pTempMaybe = pMaybe[iCol][iRow];
 				for (size_t i = 0; i < 9; i++)
 				{
 					if (0 != pTempMaybe[i])
 					{
-						printf("%d,", pTempMaybe[i]);
+						//printf("%d,", pTempMaybe[i]);
 					}
 				}
 				char* pTempCannotbe = pCannotbe[iCol][iRow];
-				printf("; can not be ");
+				//printf("; can not be ");
 				for (size_t i = 0; i < 9; i++)
 				{
 					if (0 != pTempCannotbe[i])
 					{
-						printf("%d,", pTempCannotbe[i]);
+						//printf("%d,", pTempCannotbe[i]);
 					}
 				}
-				printf("\n");
+				//printf("\n");
 			}			
 		}
 	}
@@ -534,23 +553,23 @@ void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
 			char* pTemp = pMaybe[iCol][iRow];
-			printf("%d,%d ", iCol, iRow);
+			//printf("%d,%d ", iCol, iRow);
 			if (0 != sodukuInit[iCol][iRow])
 			{
-				printf("must be %d", sodukuInit[iCol][iRow]);
+				//printf("must be %d", sodukuInit[iCol][iRow]);
 			}
 			else
 			{
-				printf("maybe ", iCol, iRow);
+				//printf("maybe ", iCol, iRow);
 				for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
 				{
 					if (0 != pTemp[iMayValue])
 					{
-						printf("%d,", pTemp[iMayValue]);
+						//printf("%d,", pTemp[iMayValue]);
 					}
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 	}    
 }
@@ -567,31 +586,31 @@ void ShowPossibility()
 	{
 		for (size_t iRow = 0; iRow < 9; iRow++)
 		{
-			printf("%d,%d ", iCol, iRow);
+			//printf("%d,%d ", iCol, iRow);
 			if (0 != sodukuInit[iCol][iRow])
 			{
-				printf("must be %d", sodukuInit[iCol][iRow]);
+				//printf("must be %d", sodukuInit[iCol][iRow]);
 			}
 			else
 			{
-				printf("maybe ");
+				//printf("maybe ");
 				for (size_t iTemp = 1; iTemp <= 9; iTemp++)
 				{
 					if (MaybeNumber(iCol,iRow,iTemp))
 					{
-						printf("%d,", iTemp);
+						//printf("%d,", iTemp);
 					}
 				}
-				printf("; can not be ");
+				//printf("; can not be ");
 				for (size_t iTemp = 1; iTemp <= 9; iTemp++)
 				{
 					if (CannotbeNumber(iCol, iRow, iTemp))
 					{
-						printf("%d,", iTemp);
+						//printf("%d,", iTemp);
 					}
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 	}
 	return;
@@ -680,16 +699,16 @@ void ShowCannotbe()
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
-			printf("%d,%d can not be ", iCol, iRow);
+			//printf("%d,%d can not be ", iCol, iRow);
 			char* pTemp = sodukuCannotbe[iCol][iRow];
 			for (size_t i = 0; i < 9; i++)
 			{
 				if (0 != pTemp[i])
 				{
-					printf("%d,", i+1);
+					//printf("%d,", i+1);
 				}
 			}
-			printf("\n");
+			//printf("\n");
 		}
 	}
 }
@@ -844,4 +863,65 @@ bool ConfirmByCannotbe(int iCol, int iRow, int iNumber)
 	return bResult;
 }
 
+bool CheckSudodu()
+{
+	char szExlude[9] = { 0 };
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			if (0 == sodukuInit[iCol][iRow])
+			{
+				continue;
+			}
+			memset(szExlude, 0, 9);
+			int iTemp = sodukuInit[iCol][iRow];
+			for (int iHorizontal = 0; iHorizontal < 9; iHorizontal++)
+			{
+				if (iTemp == sodukuInit[iCol][iHorizontal])
+				{
+					szExlude[iTemp - 1] += 1;
+				}
+				if (szExlude[iTemp - 1] > 1)
+				{
+					return false;
+				}
+			}
+
+			//Vertical
+			memset(szExlude, 0, 9);
+			for (int iVertical = 0; iVertical < 9; iVertical++)
+			{
+				if (iTemp == sodukuInit[iVertical][iRow])
+				{
+					szExlude[iTemp - 1] += 1;
+				}
+				if (szExlude[iTemp - 1] > 1)
+				{
+					return false;
+				}
+			}
+
+			//Box
+			memset(szExlude, 0, 9);
+			int iStartCol = iCol / 3;
+			int iStartRow = iRow / 3;
+			for (int i = 3 * iStartCol; i < 3 * iStartCol + 3; i++)
+			{
+				for (int j = 3 * iStartRow; j < 3 * iStartRow + 3; j++)
+				{
+					if (iTemp == sodukuInit[i][j])
+					{
+						szExlude[iTemp - 1] += 1;
+					}
+					if (szExlude[iTemp - 1] > 1)
+					{
+						return false;
+					}
+				}
+			}
+		}
+	}
+	return true;
+}
 
