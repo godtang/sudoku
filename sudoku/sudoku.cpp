@@ -92,7 +92,7 @@ void showSoduku()
 }
 
 
-void algorithm()
+void UniqueMethod()
 {
 	for (size_t i = 0; i < 9; i++)
 	{
@@ -110,6 +110,7 @@ void algorithm()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	/* not need
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
@@ -122,26 +123,22 @@ int _tmain(int argc, _TCHAR* argv[])
 			sodukuMaybe[iCol][iRow] = p;
 		}
 	}
+	*/
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
 			char* p = new char[9];
-			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
+			//for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
 			{
-				p[iMayValue] = 0;
+				//p[iMayValue] = 0;
 			}
 			sodukuCannotbe[iCol][iRow] = p;
 		}
 	}
-	ShowCannotbe();
- 	showSoduku();
-// 	ShowPossibility();
-// 	ShowPossibility(sodukuMaybe, sodukuCannotbe);
-// 	showSoduku();
-//	ShowCannotbe();
 	for (size_t i = 0; i < 1000; i++)
 	{
+		showSoduku();
 		if (!CheckSudodu())
 		{
 			printf("some error happened !\n");
@@ -152,19 +149,14 @@ int _tmain(int argc, _TCHAR* argv[])
 			printf("%d times over\n", i);
 			break;
 		}
-		//ShowPossibility();
-		//possibility(sodukuMaybe);
-		//ShowPossibility(sodukuMaybe, sodukuCannotbe);
-		algorithm();
+		UniqueMethod();
 		ResetCannotbe();
-		ShowPossibility();
-		showSoduku();
-		ShowCannotbe();
+		ReCalcCannotbe();
 		ConfirmByCannotbe();
-		//ShowCannotbe();
-		//ShowCannotbe();
-		//exclusions();
-
+	}
+	if (0 != iCheck)
+	{
+		Surmise();
 	}
 	showSoduku();
 	return 0;
@@ -425,7 +417,7 @@ void possibility(char* pSrc[9][9])
 	}
 }
 
-void ShowPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
+void ReCalcCannotbe(char* pMaybe[9][9], char* pCannotbe[9][9])
 {
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
@@ -580,7 +572,7 @@ void ConfirmPossibility(char* pSrc[9][9])
 
 }
 
-void ShowPossibility()
+void ReCalcCannotbe()
 {
 	for (size_t iCol = 0; iCol < 9; iCol++)
 	{
@@ -923,5 +915,12 @@ bool CheckSudodu()
 		}
 	}
 	return true;
+}
+
+void Surmise()
+{
+	char sodukuBackup[9][9] = {0};
+	memcpy(sodukuBackup, sodukuInit, 81);
+	return;
 }
 
