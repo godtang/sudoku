@@ -14,20 +14,21 @@ bool checkUnknown();
 void exclusions();
 bool ConfirmNumber(int iCol, int iRow, int iNumber);
 void possibility(char* pSrc[9][9]);
-void ReCalcCannotbe(char* pMaybe[9][9], char* pCannotbe[9][9]);
-void ReCalcCannotbe();
+void ReCalcPossibility(char* pMaybe[9][9], char* pCannotbe[9][9]);
+void ReCalcPossibility();
 void ConfirmPossibility(char* pSrc[9][9]);
 bool MaybeNumber(int iCol, int iRow, int iNumber);
 bool CannotbeNumber(int iCol, int iRow, int iNumber);
 
-void ShowCannotbe();
-void ResetCannotbe();
+void ShowPossibility();
+void ResetPossibility();
 void ConfirmByCannotbe();
 bool ConfirmByCannotbe(int iCol, int iRow, int iNumber);
 
 bool CheckSudodu();
 
 void Surmise();
+void SurmiseOnce();
 
 
 

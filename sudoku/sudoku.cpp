@@ -110,29 +110,19 @@ void UniqueMethod()
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	/* not need
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
 			char* p = new char[9];
-			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
-			{
-				p[iMayValue] = iMayValue + 1;
-			}
 			sodukuMaybe[iCol][iRow] = p;
 		}
 	}
-	*/
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
 			char* p = new char[9];
-			//for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
-			{
-				//p[iMayValue] = 0;
-			}
 			sodukuCannotbe[iCol][iRow] = p;
 		}
 	}
@@ -150,8 +140,8 @@ int _tmain(int argc, _TCHAR* argv[])
 			break;
 		}
 		UniqueMethod();
-		ResetCannotbe();
-		ReCalcCannotbe();
+		ResetPossibility();
+		ReCalcPossibility();
 		ConfirmByCannotbe();
 	}
 	if (0 != iCheck)
@@ -417,7 +407,7 @@ void possibility(char* pSrc[9][9])
 	}
 }
 
-void ReCalcCannotbe(char* pMaybe[9][9], char* pCannotbe[9][9])
+void ReCalcPossibility(char* pMaybe[9][9], char* pCannotbe[9][9])
 {
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
@@ -572,7 +562,7 @@ void ConfirmPossibility(char* pSrc[9][9])
 
 }
 
-void ReCalcCannotbe()
+void ReCalcPossibility()
 {
 	for (size_t iCol = 0; iCol < 9; iCol++)
 	{
@@ -590,6 +580,7 @@ void ReCalcCannotbe()
 				{
 					if (MaybeNumber(iCol,iRow,iTemp))
 					{
+						sodukuMaybe[iCol][iRow][iTemp-1] = 1;
 						//printf("%d,", iTemp);
 					}
 				}
@@ -685,27 +676,45 @@ bool CannotbeNumber(int iCol, int iRow, int iNumber)
 	return false;
 }
 
-void ShowCannotbe()
+void ShowPossibility()
 {
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
 		for (int iRow = 0; iRow < 9; iRow++)
 		{
-			//printf("%d,%d can not be ", iCol, iRow);
-			char* pTemp = sodukuCannotbe[iCol][iRow];
-			for (size_t i = 0; i < 9; i++)
+			printf("%d,%d ", iCol, iRow);
+			if (0!=sodukuInit[iCol][iRow])
 			{
-				if (0 != pTemp[i])
+				printf("= %d", sodukuInit[iCol][iRow]);
+			} 
+			else
+			{
+				printf("may be ");
+				char* pTemp = sodukuMaybe[iCol][iRow];
+				for (size_t i = 0; i < 9; i++)
 				{
-					//printf("%d,", i+1);
+					if (0 != pTemp[i])
+					{
+						printf("%d,", i + 1);
+					}
+				}
+
+				printf("; can not be ");
+				pTemp = sodukuCannotbe[iCol][iRow];
+				for (size_t i = 0; i < 9; i++)
+				{
+					if (0 != pTemp[i])
+					{
+						printf("%d,", i + 1);
+					}
 				}
 			}
-			//printf("\n");
+			printf("\n");
 		}
 	}
 }
 
-void ResetCannotbe()
+void ResetPossibility()
 {
 	for (int iCol = 0; iCol < 9; iCol++)
 	{
@@ -713,6 +722,7 @@ void ResetCannotbe()
 		{
 			for (size_t iMayValue = 0; iMayValue < 9; iMayValue++)
 			{
+				sodukuMaybe[iCol][iRow][iMayValue] = 0;
 				sodukuCannotbe[iCol][iRow][iMayValue] = 0;
 			}
 		}
@@ -921,6 +931,51 @@ void Surmise()
 {
 	char sodukuBackup[9][9] = {0};
 	memcpy(sodukuBackup, sodukuInit, 81);
+	ResetPossibility();
+	ReCalcPossibility();
+	ShowPossibility();
+	for (int i = 0; i < 100;i++)
+	{
+		SurmiseOnce();
+		while (CheckSudodu())
+		{
+			if (checkUnknown())
+			{
+				printf("this time over \n");
+				return;
+			}
+			UniqueMethod();
+			ResetPossibility();
+			ReCalcPossibility();
+			showSoduku();
+		}
+		if (0 == iCheck)
+		{
+			printf("done\n");
+			break;
+		}
+	}
 	return;
+}
+
+void SurmiseOnce()
+{
+	for (int iCol = 0; iCol < 9; iCol++)
+	{
+		for (int iRow = 0; iRow < 9; iRow++)
+		{
+			if (0 == sodukuInit[iCol][iRow])
+			{
+				for (int i = 0; i < 9; i++)
+				{
+					if (0 != sodukuMaybe[iCol][iRow][i])
+					{
+						sodukuInit[iCol][iRow] = i + 1;
+						return;
+					}
+				}
+			}
+		}
+	}
 }
 
