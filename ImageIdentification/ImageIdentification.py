@@ -1,71 +1,13 @@
-import os
+ï»¿import os
 from PIL import Image
-import cv2
-
-
-srcFile = 'F:/code/sudoku/Debug/image/nomarl_61.png'
-s = os.path.split(srcFile)
-dstpath = s[0]
-fn = s[1].split('.')
-basename = fn[0]
-ext = fn[-1]
-y=540
-width=105
-height=105
-img = Image.open(srcFile)
-
-numberThinList = [0,1,3,4,6,7]
-numberThickList = [2,5]
-countTick = 1
-for i in range(0,9):
-    x=28
-    for j in range(0,9):
-        #print "x="+str(x)
-        box = (x+2, y+2, x+width, y+height)
-        img.crop(box).save(os.path.join(dstpath+'/splite', basename + '_'+str(countTick)+'.' + ext), ext)
-        if j in numberThinList:
-            x = x + 6 + width+2
-        elif j in numberThickList:
-            x = x + 12 + width+2
-        countTick = countTick + 1
-    if i in numberThinList:
-        y = y + 6 + height+2
-    elif i in numberThickList:
-        y = y + 12 + height+2
-
-rootdir = 'F:/code/sudoku/Debug/image/splite/'
-list = os.listdir(rootdir) #ÁÐ³öÎÄ¼þ¼ÐÏÂËùÓÐµÄÄ¿Â¼ÓëÎÄ¼þ
-for i in range(0,len(list)):
-    imagePath = os.path.join(rootdir,list[i])
-    img = cv2.imread(imagePath)
-    GrayImage=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  
-    # ÖÐÖµÂË²¨  
-    GrayImage= cv2.medianBlur(GrayImage,5)  
-    ret,th1 = cv2.threshold(GrayImage,127,255,cv2.THRESH_BINARY)  
-    #3 ÎªBlock size, 5Îªparam1Öµ  
-    th2 = cv2.adaptiveThreshold(GrayImage,255,cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY,3,5)  
-    th3 = cv2.adaptiveThreshold(GrayImage,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,3,5)  
-    titles = ['Gray Image', 'Global Thresholding (v = 127)', 'Adaptive Mean Thresholding', 'Adaptive Gaussian Thresholding']  
-    images = [GrayImage, th1, th2, th3]  
-    for i in xrange(4):  
-       plt.subplot(2,2,i+1),plt.imshow(images[i],'gray')  
-       plt.title(titles[i])  
-       plt.xticks([]),plt.yticks([])  
-    plt.show()  
-    cv2.waitKey(0)
-    #ÊÍ·Å´°¿Ú
-    cv2.destroyAllWindows() 
-    I = Image.open(imagePath)
-    L = I.convert('L')   #×ª»¯Îª»Ò¶ÈÍ¼
-    L = I.convert('1')   #×ª»¯Îª¶þÖµ»¯Í¼
-    L.save(imagePath)
+import cv2 
 
 def splitimage(src, rownum, colnum, dstpath):
     img = Image.open(src)
     w, h = img.size
     if rownum <= h and colnum <= w:
         print('Original image info: %sx%s, %s, %s' % (w, h, img.format, img.mode))
-        print('¿ªÊ¼´¦ÀíÍ¼Æ¬ÇÐ¸î, ÇëÉÔºò...')
+        print('å¼€å§‹å¤„ç†å›¾ç‰‡åˆ‡å‰², è¯·ç¨å€™...')
 
         s = os.path.split(src)
         if dstpath == '':
@@ -83,21 +25,119 @@ def splitimage(src, rownum, colnum, dstpath):
                 img.crop(box).save(os.path.join(dstpath, basename + '_' + str(num) + '.' + ext), ext)
                 num = num + 1
 
-        print('Í¼Æ¬ÇÐ¸îÍê±Ï£¬¹²Éú³É %s ÕÅÐ¡Í¼Æ¬¡£' % num)
+        print('å›¾ç‰‡åˆ‡å‰²å®Œæ¯•ï¼Œå…±ç”Ÿæˆ %s å¼ å°å›¾ç‰‡ã€‚' % num)
     else:
-        print('²»ºÏ·¨µÄÐÐÁÐÇÐ¸î²ÎÊý£¡')
+        print('ä¸åˆæ³•çš„è¡Œåˆ—åˆ‡å‰²å‚æ•°ï¼')
 
-src = input('ÇëÊäÈëÍ¼Æ¬ÎÄ¼þÂ·¾¶£º')
+
+'''
+src = input('è¯·è¾“å…¥å›¾ç‰‡æ–‡ä»¶è·¯å¾„ï¼š')
 if os.path.isfile(src):
-    dstpath = input('ÇëÊäÈëÍ¼Æ¬Êä³öÄ¿Â¼£¨²»ÊäÈëÂ·¾¶Ôò±íÊ¾Ê¹ÓÃÔ´Í¼Æ¬ËùÔÚÄ¿Â¼£©£º')
+    dstpath = input('è¯·è¾“å…¥å›¾ç‰‡è¾“å‡ºç›®å½•ï¼ˆä¸è¾“å…¥è·¯å¾„åˆ™è¡¨ç¤ºä½¿ç”¨æºå›¾ç‰‡æ‰€åœ¨ç›®å½•ï¼‰ï¼š')
     if (dstpath == '') or os.path.exists(dstpath):
-        row = int(input('ÇëÊäÈëÇÐ¸îÐÐÊý£º'))
-        col = int(input('ÇëÊäÈëÇÐ¸îÁÐÊý£º'))
+        row = int(input('è¯·è¾“å…¥åˆ‡å‰²è¡Œæ•°ï¼š'))
+        col = int(input('è¯·è¾“å…¥åˆ‡å‰²åˆ—æ•°ï¼š'))
         if row > 0 and col > 0:
             splitimage(src, row, col, dstpath)
         else:
-            print('ÎÞÐ§µÄÐÐÁÐÇÐ¸î²ÎÊý£¡')
+            print('æ— æ•ˆçš„è¡Œåˆ—åˆ‡å‰²å‚æ•°ï¼')
     else:
-        print('Í¼Æ¬Êä³öÄ¿Â¼ %s ²»´æÔÚ£¡' % dstpath)
+        print('å›¾ç‰‡è¾“å‡ºç›®å½• %s ä¸å­˜åœ¨ï¼' % dstpath)
 else:
-    print('Í¼Æ¬ÎÄ¼þ %s ²»´æÔÚ£¡' % src)
+    print('å›¾ç‰‡æ–‡ä»¶ %s ä¸å­˜åœ¨ï¼' % src)
+'''
+
+def InverseWhite(img):  
+    w,h=img.size  
+    data=img.getdata()
+    for x in range(w):  
+        for y in range(h):  
+            #img.putpixel((x,y),255-data[y*w+x])  
+            if data[y*w+x]!=255:#255æ˜¯ç™½è‰² 0æ˜¯é»‘è‰²  
+                img.putpixel((x,y),0)  
+            else:  
+                img.putpixel((x,y),255)  
+    return img 
+
+def Identification(imagePath):
+    img = Image.open(imagePath)
+    w,h=img.size  
+    data=img.getdata()
+    print imagePath + "=" + str(SimilarityRatio(data))
+
+def SimilarityRatio(data):
+    moldPath = 'F:/code/sudoku/Debug/image/mold/'
+    listRatio = []
+    maxIndex = 0
+    maxRatio = 0.0
+    for i in range(0,10):
+        moldFile = moldPath + str(i)+".png"
+        img = Image.open(moldFile)
+        moldData=img.getdata()
+        w,h=img.size
+        indexEqui = 0
+        indexTotal = 0
+        for x in range(w):  
+            for y in range(h):
+                if data[y*w+x] == moldData[y*w+x] and 0 == data[y*w+x]:
+                    indexEqui = indexEqui + 1
+                if 0 == data[y*w+x]:
+                    indexTotal = indexTotal + 1
+        if 0 == indexTotal :
+            return 0
+        ratio = (indexEqui+0.0) / (indexTotal)
+        #print str(i) + "|" + str(ratio) + "|" + str(indexEqui) + "|" + str(indexTotal)
+        if 1 == ratio :
+            return i
+        listRatio.insert(i, ratio)
+    for i in range(0,10):
+        if listRatio[i] > maxRatio :
+            maxIndex = i
+            maxRatio = listRatio[i]
+    return maxIndex
+
+
+if __name__ == '__main__':
+    srcFile = 'F:/code/sudoku/Debug/image/nomarl_61.png'
+    s = os.path.split(srcFile)
+    dstpath = s[0]
+    fn = s[1].split('.')
+    basename = fn[0]
+    ext = fn[-1]
+    y=540
+    width=105
+    height=105
+    img = Image.open(srcFile)
+
+    numberThinList = [0,1,3,4,6,7]
+    numberThickList = [2,5]
+    countTick = 1
+    for i in range(0,9):
+        x=28
+        for j in range(0,9):
+            #print "x="+str(x)
+            box = (x+2, y+2, x+width, y+height)
+            img.crop(box).save(os.path.join(dstpath+'/splite', basename + '_'+str(countTick)+'.' + ext), ext)
+            if j in numberThinList:
+                x = x + 6 + width+2
+            elif j in numberThickList:
+                x = x + 12 + width+2
+            countTick = countTick + 1
+        if i in numberThinList:
+            y = y + 6 + height+2
+        elif i in numberThickList:
+            y = y + 12 + height+2
+
+    rootdir = 'F:/code/sudoku/Debug/image/splite/'
+    list = os.listdir(rootdir) #åˆ—å‡ºæ–‡ä»¶å¤¹ä¸‹æ‰€æœ‰çš„ç›®å½•ä¸Žæ–‡ä»¶
+    for i in range(0,len(list)):
+        imagePath = os.path.join(rootdir,list[i])
+        img = cv2.imread(imagePath)    
+        GrayImage=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        ret, thresh = cv2.threshold(GrayImage, 12, 255,cv2.THRESH_BINARY)
+        cv2.imwrite(imagePath, thresh)
+
+    for i in range(1,82):
+        imagePath = rootdir + "nomarl_61_" + str(i) + ".png"
+        Identification(imagePath)
+
