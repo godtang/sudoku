@@ -1,6 +1,8 @@
 ﻿import os
+import sys
 from PIL import Image
 import cv2 
+import time
 
 def splitimage(src, rownum, colnum, dstpath):
     img = Image.open(src)
@@ -61,44 +63,61 @@ def InverseWhite(img):
 
 def Identification(imagePath):
     img = Image.open(imagePath)
-    w,h=img.size  
     data=img.getdata()
-    print imagePath + "=" + str(SimilarityRatio(data))
+    number = -1
+    if IsZero(data):
+        number = 0
+    else:
+        number = SimilarityRatio(data)
+    return number
+
+def IsZero(data):
+    img = Image.open('F:/code/sudoku/Debug/image/mold/0/0_1.png')
+    moldData=img.getdata()
+    w,h=moldData.size
+    indexEqui = 0
+    indexTotal = 0
+    for x in range(w):  
+        for y in range(h):
+            if data[y*w+x] == moldData[y*w+x]:
+                indexEqui = indexEqui + 1
+            indexTotal = indexTotal + 1
+    ratio = (indexEqui+0.0) / (indexTotal)
+    if ratio > 0.99 :
+        return True
+    else:
+        return False
 
 def SimilarityRatio(data):
     moldPath = 'F:/code/sudoku/Debug/image/mold/'
-    listRatio = []
-    maxIndex = 0
-    maxRatio = 0.0
-    for i in range(0,10):
-        moldFile = moldPath + str(i)+".png"
-        img = Image.open(moldFile)
-        moldData=img.getdata()
-        w,h=img.size
-        indexEqui = 0
-        indexTotal = 0
-        for x in range(w):  
-            for y in range(h):
-                if data[y*w+x] == moldData[y*w+x] and 0 == data[y*w+x]:
-                    indexEqui = indexEqui + 1
-                if 0 == data[y*w+x]:
-                    indexTotal = indexTotal + 1
-        if 0 == indexTotal :
-            return 0
-        ratio = (indexEqui+0.0) / (indexTotal)
-        #print str(i) + "|" + str(ratio) + "|" + str(indexEqui) + "|" + str(indexTotal)
-        if 1 == ratio :
-            return i
-        listRatio.insert(i, ratio)
-    for i in range(0,10):
-        if listRatio[i] > maxRatio :
-            maxIndex = i
-            maxRatio = listRatio[i]
-    return maxIndex
+    maxPossibleNumber = 0
+    for iMold in range(1,10):
+        moldNumberPath = moldPath + str(iMold)
+        list = os.listdir(moldNumberPath) #列出文件夹下所有的目录与文件
+        for i in range(0,len(list)):            
+            imagePath = os.path.join(moldNumberPath,list[i])
+            img = Image.open(imagePath)
+            moldData=img.getdata()
+            w,h=img.size
+            indexEqui = 0
+            indexTotal = 0
+            for x in range(w):  
+                for y in range(h):
+                    if data[y*w+x] == moldData[y*w+x] and 0 == data[y*w+x]:
+                        indexEqui = indexEqui + 1
+                    if 0 == data[y*w+x]:
+                        indexTotal = indexTotal + 1
+            if 0 == indexTotal :
+                continue
+            ratio = (indexEqui+0.0) / (indexTotal)
+            #print str(i) + "|" + str(ratio) + "|" + str(indexEqui) + "|" + str(indexTotal)
+            if ratio > 0.90:
+                return iMold
+    return maxPossibleNumber
 
 
 if __name__ == '__main__':
-    srcFile = 'F:/code/sudoku/Debug/image/nomarl_61.png'
+    srcFile = 'F:/code/sudoku/Debug/image/nomarl_62.png'
     s = os.path.split(srcFile)
     dstpath = s[0]
     fn = s[1].split('.')
@@ -137,7 +156,23 @@ if __name__ == '__main__':
         ret, thresh = cv2.threshold(GrayImage, 12, 255,cv2.THRESH_BINARY)
         cv2.imwrite(imagePath, thresh)
 
+    strNumberString = "{\n"
     for i in range(1,82):
-        imagePath = rootdir + "nomarl_61_" + str(i) + ".png"
-        Identification(imagePath)
+        imagePath = rootdir + "nomarl_62_" + str(i) + ".png"
+        #img = Image.open(imagePath)
+        #img.resize((32,32),Image.ANTIALIAS)
+        #img.save(imagePath, quality=100)
+        number = Identification(imagePath)
+        if i%9 == 1:
+            strNumberString = strNumberString + '{'
+        strNumberString = strNumberString + str(number)
+        if i%9 != 0:
+            strNumberString = strNumberString + ','
+        if i%81 == 0:
+            strNumberString = strNumberString + '}\n'
+            break
+        if i%9 == 0:
+            strNumberString = strNumberString + '},\n'
+    strNumberString = strNumberString + '}'
+    print strNumberString
 
